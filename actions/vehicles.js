@@ -1,7 +1,10 @@
-import { imagekit } from "@/lib/imagekit";
+"use server";
+
+import imagekit from "@/lib/imagekit";
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { GoogleGenAI } from "@google/genai";
+import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 
 async function fileToBase64(file) {
@@ -136,8 +139,8 @@ export const addCar = async ({ carData, images }) => {
     const folderName = `cars/${carId}`;
 
     // Upload images to storage
-    const imageUrls = [];
-    const uploadPromises = [];
+    let imageUrls = [];
+    let uploadPromises = [];
 
     // Loop through each image file
     for (let i = 0; i < images.length; i++) {
