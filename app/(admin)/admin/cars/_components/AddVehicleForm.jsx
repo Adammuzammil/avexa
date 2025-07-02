@@ -28,12 +28,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
-import { Loader2, Upload, X } from "lucide-react";
+import { Camera, Loader2, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { toast } from "sonner";
 import useFetch from "@/hooks/use-fetch";
-import { addCar } from "@/actions/vehicles";
+import { addCar, processCarImageWithAI } from "@/actions/vehicles";
 
 // Predefined options
 const fuelTypes = ["Petrol", "Diesel", "Electric", "Hybrid", "Plug-in Hybrid"];
@@ -194,6 +194,12 @@ const AddVehicleForm = () => {
   });
 
   const { data, loading, fn: addCarFn } = useFetch(addCar);
+  const {
+    loading: processImageLoading,
+    fn: processImageFn,
+    data: processImageResult,
+    error: processImageError,
+  } = useFetch(processCarImageWithAI);
 
   useEffect(() => {
     if (data?.success) {
@@ -201,6 +207,47 @@ const AddVehicleForm = () => {
       router.push("/admin/cars");
     }
   }, [data, router]);
+
+  useEffect(() => {
+    if (processImageError) {
+      toast.error(processImageError.message || "Failed to upload car");
+    }
+  }, [processImageError]);
+
+  // Handle successful AI processing
+  useEffect(() => {
+    if (processImageResult?.success) {
+      const carDetails = processImageResult.data;
+
+      // Update form with AI results
+      setValue("make", carDetails.make);
+      setValue("model", carDetails.model);
+      setValue("year", carDetails.year.toString());
+      setValue("color", carDetails.color);
+      setValue("bodyType", carDetails.bodyType);
+      setValue("fuelType", carDetails.fuelType);
+      setValue("price", carDetails.price);
+      setValue("mileage", carDetails.mileage);
+      setValue("transmission", carDetails.transmission);
+      setValue("description", carDetails.description);
+
+      // Add the image to the uploaded images
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setUploadedImages((prev) => [...prev, e.target.result]);
+      };
+      reader.readAsDataURL(uploadedAiImage);
+
+      toast.success("Successfully extracted car details", {
+        description: `Detected ${carDetails.year} ${carDetails.make} ${
+          carDetails.model
+        } with ${Math.round(carDetails.confidence * 100)}% confidence`,
+      });
+
+      // Switch to manual tab for the user to review and fill in missing details
+      setActiveTab("manual");
+    }
+  }, [processImageResult, setValue, uploadedAiImage]);
 
   const onSubmit = async (data) => {
     // Check if images are uploaded
@@ -221,6 +268,15 @@ const AddVehicleForm = () => {
       carData,
       images: uploadedImages,
     });
+  };
+
+  const processWithAI = async () => {
+    if (!uploadedAiImage) {
+      toast.error("Please upload an image to process");
+      return;
+    }
+
+    await processImageFn(uploadedAiImage);
   };
   return (
     <div>
@@ -591,9 +647,44 @@ const AddVehicleForm = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                <div>
+                <div className="border-2 border-dashed rounded-lg p-6 text-center">
                   {imagePreview ? (
-                    <div></div>
+                    <div className="flex flex-col items-center">
+                      <img
+                        src={imagePreview}
+                        alt="Car preview"
+                        className="max-h-56 max-w-full object-contain mb-4"
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setImagePreview(null);
+                            setUploadedAiImage(null);
+                          }}
+                        >
+                          Remove
+                        </Button>
+                        <Button
+                          onClick={processWithAI}
+                          disabled={processImageLoading}
+                          size="sm"
+                        >
+                          {processImageLoading ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Processing...
+                            </>
+                          ) : (
+                            <>
+                              <Camera className="mr-2 h-4 w-4" />
+                              Extract Details
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    </div>
                   ) : (
                     <div
                       {...getAiRootProps()}
