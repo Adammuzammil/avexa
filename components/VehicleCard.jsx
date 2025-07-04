@@ -48,7 +48,7 @@ const VehicleCard = ({ vehicle }) => {
       <CardContent className="p-4">
         <div className="flex flex-col mb-2">
           <h3 className="text-lg font-bold line-clamp-1">
-            {vehicle.maker} {vehicle.model}
+            {vehicle.make} {vehicle.model}
           </h3>
           <span className="text-xl font-bold text-blue-600">
             {vehicle.price}

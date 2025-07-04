@@ -1,3 +1,4 @@
+import { getFeaturedCars } from "@/actions/main";
 import Search from "@/components/Search";
 import {
   Accordion,
@@ -7,14 +8,16 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import VehicleCard from "@/components/VehicleCard";
-import { bodyTypes, faqItems, featuredCars } from "@/lib/data";
+import { bodyTypes, faqItems } from "@/lib/data";
 import { SignedOut } from "@clerk/nextjs";
 import { Calendar, Car, ChevronRight, Shield } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-const page = () => {
+const page = async () => {
+  const featuredCars = await getFeaturedCars();
+  console.log(featuredCars);
   return (
     <div className="pt-20 flex flex-col">
       <section className="relative py-16 md:py-28">
@@ -44,7 +47,7 @@ const page = () => {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
             {featuredCars.map((vehicle) => {
               return <VehicleCard key={vehicle.id} vehicle={vehicle} />;
             })}

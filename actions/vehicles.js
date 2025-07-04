@@ -69,7 +69,6 @@ export async function processCarImageWithAI(file) {
     `;
 
     // Get response from Gemini
-    // Get response from Gemini
     const result = await model.generateContent([imagePart, prompt]);
     const response = await result.response;
     const text = response.text();
