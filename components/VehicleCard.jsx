@@ -61,6 +61,7 @@ const VehicleCard = ({ vehicle }) => {
               src={vehicle.images[0]}
               alt={`${vehicle.maker} ${vehicle.model}`}
               fill
+              blurDataURL={vehicle.images[0]}
               className="object-cover group-hover:scale-105 transition duration-300"
             />
           </div>
