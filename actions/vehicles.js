@@ -379,3 +379,27 @@ export const updateCarStatus = async (id, { status, featured }) => {
     };
   }
 };
+
+export const incrementCarViews = async (carId) => {
+  try {
+    if (!carId) {
+      throw new Error("Car ID is required");
+    }
+
+    await db.car.update({
+      where: { id: carId },
+      data: {
+        views: {
+          increment: 1,
+        },
+      },
+    });
+
+    revalidatePath(`/cars/${carId}`);
+    revalidatePath("/cars");
+    return { success: true };
+  } catch (error) {
+    console.error("Error incrementing car view:", error);
+    return { success: false };
+  }
+};

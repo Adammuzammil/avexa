@@ -196,6 +196,7 @@ const VehicleList = () => {
                     <TableHead>Price</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Featured</TableHead>
+                    <TableHead>Views</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -241,6 +242,9 @@ const VehicleList = () => {
                               <StarOff className="h-5 w-5 text-gray-400" />
                             )}
                           </Button>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {car.views}
                         </TableCell>
 
                         <TableCell className="text-right">

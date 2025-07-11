@@ -11,6 +11,7 @@ import { toggleSavedCars } from "@/actions/vehicle-info";
 import useFetch from "@/hooks/use-fetch";
 import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
+import { incrementCarViews } from "@/actions/vehicles";
 
 const VehicleCard = ({ vehicle }) => {
   const [saved, setSaved] = useState(vehicle.wishlisted);
@@ -52,6 +53,34 @@ const VehicleCard = ({ vehicle }) => {
 
     await toggleSavedCarFn(vehicle.id);
   };
+
+  const handleViews = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("/api/car/view", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ carId: vehicle.id }),
+      });
+
+      const result = await res.json();
+      if (result?.success) {
+        console.log("View incremented successfully");
+        router.push(`/cars/${vehicle.id}`);
+      } else {
+        console.error("Failed to increment view:", result?.error);
+        toast.error("Failed to update view count");
+        router.push(`/cars/${vehicle.id}`);
+      }
+    } catch (error) {
+      console.error("Error in handleViews:", error);
+      toast.error("An error occurred");
+    }
+  };
+
   return (
     <Card className="overflow-hidden hover:shadow-lg transition group py-0">
       <div className="relative h-48">
@@ -62,6 +91,7 @@ const VehicleCard = ({ vehicle }) => {
               alt={`${vehicle.maker} ${vehicle.model}`}
               fill
               blurDataURL={vehicle.images[0]}
+              placeholder="blur"
               className="object-cover group-hover:scale-105 transition duration-300"
             />
           </div>
@@ -121,12 +151,7 @@ const VehicleCard = ({ vehicle }) => {
         </div>
 
         <div className="flex justify-between">
-          <Button
-            className="flex-1"
-            onClick={() => {
-              router.push(`/cars/${vehicle.id}`);
-            }}
-          >
+          <Button className="flex-1" onClick={handleViews}>
             View Car
           </Button>
         </div>

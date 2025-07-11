@@ -126,3 +126,14 @@ export const processImageSearch = async (file) => {
     throw new Error("AI Search error:" + error.message);
   }
 };
+
+export const getVisitLogs = async () => {
+  try {
+    const visits = await db.visitLog.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+    return visits;
+  } catch (error) {
+    throw new Error("Error fetching visit logs:" + error.message);
+  }
+};

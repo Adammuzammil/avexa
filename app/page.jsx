@@ -1,4 +1,5 @@
 import { getFeaturedCars } from "@/actions/main";
+import Map from "@/components/Map";
 import Search from "@/components/Search";
 import {
   Accordion,
@@ -8,6 +9,7 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import VehicleCard from "@/components/VehicleCard";
+import ViewButton from "@/components/ViewButton";
 import { bodyTypes, faqItems } from "@/lib/data";
 import { SignedOut } from "@clerk/nextjs";
 import { Calendar, Car, ChevronRight, Shield } from "lucide-react";
@@ -40,11 +42,7 @@ const page = async () => {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold">Featured Cars</h2>
-            <Button className="flex items-center" asChild>
-              <Link href="/cars">
-                View All <ChevronRight className="ml-1 h-4 w-4" />
-              </Link>
-            </Button>
+            <ViewButton />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-6">
@@ -173,6 +171,9 @@ const page = async () => {
           </div>
         </div>
       </section>
+
+      {/* Map */}
+      <section className="py-16 px-4">{/* <Map /> */}</section>
     </div>
   );
 };

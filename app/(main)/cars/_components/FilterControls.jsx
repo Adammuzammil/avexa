@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import { Check, X } from "lucide-react";
 import React from "react";
 
@@ -9,8 +10,6 @@ const FilterControls = ({
   onFilterChange,
   onClearFilter,
 }) => {
-  console.log("Filters", filters);
-  console.log("CurrentFilters", currentFilters);
   const { make, bodyType, fuelType, transmission, priceRange } = currentFilters;
 
   const filterSections = [
@@ -56,6 +55,10 @@ const FilterControls = ({
     <div className="space-y-6">
       {/* Price range */}
       <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="font-medium">Use my location</h3>
+          <Switch />
+        </div>
         <h3 className="font-medium">Price Range</h3>
         <div className="PX-2">
           <Slider

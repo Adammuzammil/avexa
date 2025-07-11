@@ -46,6 +46,7 @@ export const getDashboardData = async () => {
           id: true,
           status: true,
           featured: true,
+          views: true,
         },
       }),
 
